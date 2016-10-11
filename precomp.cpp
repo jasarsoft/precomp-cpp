@@ -12,6 +12,8 @@
    See the License for the specific language governing permissions and
    limitations under the License. */
 
+#define PRECOMPDLL
+
 #ifdef PRECOMPDLL
 #define DLL __declspec(dllexport)
 #endif
@@ -266,52 +268,56 @@ bool use_bzip2 = true;
 
 #include "precomp_dll.h"
 
+void setSwitches(Switches switches) {
+	compression_otf_method = switches.compression_method;
+	ignore_list = switches.ignore_list;
+	ignore_list_len = switches.ignore_list_len;
+	slow_mode = switches.slow_mode;
+	fast_mode = switches.fast_mode;
+	brute_mode = switches.brute_mode;
+	pdf_bmp_mode = switches.pdf_bmp_mode;
+	prog_only = switches.prog_only;
+	DEBUG_MODE = switches.debug_mode;
+	min_ident_size = switches.min_ident_size;
+	use_pdf = switches.use_pdf;
+	use_zip = switches.use_zip;
+	use_gzip = switches.use_gzip;
+	use_png = switches.use_png;
+	use_gif = switches.use_gif;
+	use_jpg = switches.use_jpg;
+	use_mp3 = switches.use_mp3;
+	use_swf = switches.use_swf;
+	use_base64 = switches.use_base64;
+	use_bzip2 = switches.use_bzip2;
+	use_mjpeg = switches.use_mjpeg;
+	if (switches.level_switch) {
+
+		for (int i = 0; i < 81; i++) {
+			if (switches.use_zlib_level[i]) {
+				comp_mem_level_count[i] = 0;
+			}
+			else {
+				comp_mem_level_count[i] = -1;
+			}
+		}
+
+		level_switch_used = true;
+
+	}
+}
+
 // get copyright message
 // msg = Buffer for error messages (256 bytes buffer size are enough)
-DLL void get_copyright_msg(char* msg) {
-  if (V_MINOR2 == 0) {
-    sprintf(msg, "Precomp DLL v%i.%i (c) 2006-2016 by Christian Schneider",V_MAJOR,V_MINOR);
-  } else {
-    sprintf(msg, "Precomp DLL v%i.%i.%i (c) 2006-2016 by Christian Schneider",V_MAJOR,V_MINOR,V_MINOR2);
-  }
-}
-
-void setSwitches(Switches switches) {
-  compression_otf_method = switches.compression_method;
-  ignore_list = switches.ignore_list;
-  ignore_list_len = switches.ignore_list_len;
-  slow_mode = switches.slow_mode;
-  fast_mode = switches.fast_mode;
-  brute_mode = switches.brute_mode;
-  pdf_bmp_mode = switches.pdf_bmp_mode;
-  prog_only = switches.prog_only;
-  DEBUG_MODE = switches.debug_mode;
-  min_ident_size = switches.min_ident_size;
-  use_pdf = switches.use_pdf;
-  use_zip = switches.use_zip;
-  use_gzip = switches.use_gzip;
-  use_png = switches.use_png;
-  use_gif = switches.use_gif;
-  use_jpg = switches.use_jpg;
-  use_mp3 = switches.use_mp3;
-  use_swf = switches.use_swf;
-  use_base64 = switches.use_base64;
-  use_bzip2 = switches.use_bzip2;
-  use_mjpeg = switches.use_mjpeg;
-  if (switches.level_switch) {
-
-    for (int i = 0; i < 81; i++) {
-      if (switches.use_zlib_level[i]) {
-        comp_mem_level_count[i] = 0;
-      } else {
-        comp_mem_level_count[i] = -1;
-      }
-    }
-
-    level_switch_used = true;
-
-  }
-}
+extern "C"
+{
+	DLL void get_copyright_msg(char* msg) {
+		if (V_MINOR2 == 0) {
+			sprintf(msg, "Precomp DLL v%i.%i (c) 2006-2016 by Christian Schneider", V_MAJOR, V_MINOR);
+		}
+		else {
+			sprintf(msg, "Precomp DLL v%i.%i.%i (c) 2006-2016 by Christian Schneider", V_MAJOR, V_MINOR, V_MINOR2);
+		}
+	}
 
 // precompress a file
 // in_file = input filename
@@ -414,9 +420,9 @@ DLL bool recompress_file(char* in_file, char* out_file, char* msg, Switches swit
 DLL bool file_precompressable(char* in, char* msg) {
   return false;
 }
-
+}
 #else
-
+/*
 int main(int argc, char* argv[])
 {
   int return_errorlevel = 0;
@@ -460,7 +466,7 @@ int main(int argc, char* argv[])
   
   return return_errorlevel;
 }
-
+*/
 #endif
 
 #ifndef PRECOMPDLL
